@@ -45,17 +45,20 @@ A structure page plus one page per part (24 screens in total), all connected by 
 
 ## Install
 
-**Any agent (Claude Code, Codex, Cursor and more):** run
+**Claude app (web and desktop), no terminal needed:**
+
+1. Download **[wireframe.zip](https://github.com/floorvanriet/wireframe-skill/raw/main/wireframe.zip)**.
+2. In Claude's settings, go to Skills and upload the zip. Code execution needs to be on. Anthropic's guide: [Use skills in Claude](https://support.claude.com/en/articles/12512180-use-skills-in-claude).
+
+**Claude Code, Codex, Cursor and other agents:** run this in a terminal and pick your agent:
 
 ```bash
 npx skills add floorvanriet/wireframe-skill
 ```
 
-and pick your agent. The [skills CLI](https://skills.sh) puts the skill in the right folder.
+The [skills CLI](https://skills.sh) puts the skill in the right folder.
 
-**Claude (web, desktop, mobile):** download this repository, zip the `wireframe` folder and upload the zip as a custom skill in Claude.
-
-**By hand:** copy the `wireframe` folder into your agent's skills folder, for example `~/.claude/skills/` for Claude Code. For Codex, see [where Codex reads skills](https://developers.openai.com/codex/skills).
+**By hand:** download [SKILL.md](https://raw.githubusercontent.com/floorvanriet/wireframe-skill/main/wireframe/SKILL.md) (use "Save as") and put it in a folder called `wireframe` inside your agent's skills folder, for example `~/.claude/skills/wireframe/` for Claude Code. For Codex, see [where Codex reads skills](https://developers.openai.com/codex/skills).
 
 ## Tips
 
