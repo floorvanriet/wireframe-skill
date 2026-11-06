@@ -45,6 +45,8 @@ A structure page plus one page per part (24 screens in total), all connected by 
 
 ## Install
 
+**Easiest: give Claude the link.** Paste `https://github.com/floorvanriet/wireframe-skill` in a chat with Claude (or Claude Code, or Codex) and ask it to add the skill. No save option showing up? Use the zip below.
+
 **Claude app (web and desktop), no terminal needed:**
 
 1. Download **[wireframe.zip](https://github.com/floorvanriet/wireframe-skill/raw/main/wireframe.zip)**.
