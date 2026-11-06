@@ -1,6 +1,8 @@
 # Wireframe skill for AI agents
 
-Describe a screen, a flow or a whole product concept in plain words, and your agent turns it into a **mid-fi wireframe**: one HTML file you can open in any browser, share with your team and keep iterating on.
+With agentic coding, building a polished, high-end product gets easier every month. That makes the choices underneath it matter more, not less: what the product does, how it's structured, how people move through it. Get those wrong and you just build the wrong thing faster, and prettier.
+
+That's what wireframes are for. They're quick, cheap and made to be thrown away, so you can try three directions before you commit to one. This skill lets you make them in minutes with your favorite AI tool: describe a screen, a flow or a whole concept, and get a **mid-fi wireframe** back as one HTML file you can open in any browser and share with your team. Plus a sparring partner that talks through the choices that matter before it builds.
 
 Works with any agent that supports the open [Agent Skills](https://agentskills.io) standard, such as Claude, Claude Code, Codex, Cursor and Gemini CLI. Built and tested with Claude.
 
@@ -79,6 +81,8 @@ claude plugin eval . --allow-tools Write,Edit,Bash
 ```
 
 These are real model runs, so they use your Claude usage.
+
+**Find it useful?** Give it a star, so other designers can find it too. Ideas, bugs or a wireframe you're proud of? [Open an issue](https://github.com/floorvanriet/wireframe-skill/issues).
 
 ## License
 
