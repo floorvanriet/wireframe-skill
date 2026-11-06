@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wireframe: return flow, clothing webshop app</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* tokens */
+    :root {
+      --bg:        #F5F5F5;
+      --surface:   #FFFFFF;
+      --border:    #D1D1D1;
+      --muted:     #E8E8E8;
+      --text-primary:   #1A1A1A;
+      --text-secondary: #595959;
+      --text-disabled:  #AAAAAA;
+      --accent:       #1560D0;
+      --accent-hover: #1250B0;
+      --hover-bg:     #F0F0F0;
+      --border-hover: #AAAAAA;
+      --font: 'IBM Plex Sans', system-ui, sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    body { margin: 0; -webkit-font-smoothing: antialiased; }
+    button, input, select, textarea { font: inherit; }
+
+    /* canvas + layout */
+    .wireframe-canvas {
+      background-color: var(--bg);
+      background-image: radial-gradient(circle, #C8C8C8 1px, transparent 1px);
+      background-size: 20px 20px;
+      padding: 40px;
+      min-height: 100vh;
+      font-family: var(--font);
+      color: var(--text-primary);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+    .flow + .flow { margin-top: 32px; padding-top: 32px; border-top: 1px solid var(--border); }
+    .flow-title { font-size: 15px; font-weight: 600; margin: 0; text-wrap: balance; }
+    .flow-meta { font-size: 13px; color: var(--text-secondary); margin: 4px 0 16px; }
+
+    .frame-row {
+      display: flex;
+      gap: 32px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+    .frame-col { flex-shrink: 0; }
+    .frame {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .frame.mobile { width: 375px; min-height: 780px; display: flex; flex-direction: column; }
+    .frame-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    /* icons */
+    [data-lucide] { width: 16px; height: 16px; vertical-align: -2px; stroke-width: 1.75; flex-shrink: 0; }
+    .icon-btn [data-lucide],
+    .icon-20 [data-lucide] { width: 20px; height: 20px; }
+    .icon-24 [data-lucide] { width: 24px; height: 24px; }
+
+    /* utilities */
+    .sr-only {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+    }
+    .num { font-variant-numeric: tabular-nums; }
+
+    /* app bar */
+    .app-bar {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .app-bar .icon-btn:first-child { margin-left: -8px; }
+    .app-bar .icon-btn:last-child { margin-right: -8px; }
+    .app-title { flex: 1; margin: 0; font-size: 16px; font-weight: 600; }
+    .icon-btn {
+      width: 40px; height: 40px;
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 0; border: 0; border-radius: 6px;
+      background: transparent; color: var(--text-primary);
+      cursor: pointer;
+    }
+    .icon-btn:hover { background: var(--hover-bg); }
+
+    /* stepper */
+    .stepper {
+      display: flex; align-items: center; gap: 8px;
+      list-style: none; margin: 0; padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .step { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-secondary); }
+    .step-dot {
+      width: 28px; height: 28px; border-radius: 50%;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums;
+      background: var(--muted); color: var(--text-secondary);
+    }
+    .step-dot [data-lucide] { width: 14px; height: 14px; stroke-width: 2.25; }
+    .step.is-active { color: var(--text-primary); font-weight: 500; }
+    .step.is-active .step-dot { background: var(--accent); color: #FFFFFF; }
+    .step.is-done .step-dot { background: var(--border); color: var(--text-secondary); }
+    .step-line { width: 32px; height: 1px; background: var(--border); }
+
+    /* screen body */
+    .screen { flex: 1; padding: 24px 16px; display: flex; flex-direction: column; gap: 24px; }
+    .h1 { margin: 0; font-size: 22px; line-height: 1.25; font-weight: 600; text-wrap: balance; }
+    .lead { margin: 4px 0 0; font-size: 14px; color: var(--text-secondary); }
+    .meta { font-size: 12px; color: var(--text-secondary); }
+    .section-label {
+      margin: 0 0 8px;
+      font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--text-secondary);
+    }
+    .field-label { display: block; padding: 0; margin: 0 0 8px; font-size: 13px; font-weight: 500; color: var(--text-primary); }
+
+    /* note */
+    .note {
+      display: flex; gap: 8px; align-items: flex-start;
+      padding: 12px; border-radius: 6px;
+      background: var(--bg); font-size: 13px;
+    }
+    .note [data-lucide] { margin-top: 1px; }
+    .note p { margin: 0; }
+
+    /* image placeholders */
+    .ph {
+      display: flex; align-items: center; justify-content: center; text-align: center;
+      background: var(--muted); color: var(--text-secondary);
+      font-size: 13px; line-height: 1.3; padding: 4px;
+    }
+    .ph-thumb { width: 56px; aspect-ratio: 3 / 4; border-radius: 4px; flex-shrink: 0; }
+    .ph-qr { width: 168px; aspect-ratio: 1 / 1; border-radius: 4px; }
+
+    /* order lines */
+    .lines { list-style: none; margin: 0; padding: 0; }
+    .line { display: flex; gap: 12px; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid var(--border); }
+    .line:first-child { padding-top: 0; }
+    .line-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+    .line-name { font-size: 14px; font-weight: 500; }
+    .price { font-size: 14px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+    /* key-value rows */
+    .rows { margin: 0; display: flex; flex-direction: column; gap: 4px; }
+    .row { display: flex; justify-content: space-between; gap: 16px; font-size: 14px; }
+    .row dt { color: var(--text-secondary); }
+    .row dd { margin: 0; font-variant-numeric: tabular-nums; }
+    .row.is-total { padding-top: 8px; margin-top: 4px; border-top: 1px solid var(--border); font-weight: 600; }
+    .row.is-total dt { color: var(--text-primary); }
+    .address { margin: 0; font-style: normal; font-size: 14px; }
+
+    /* buttons */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      min-height: 40px; padding: 0 20px; border-radius: 6px;
+      font-size: 14px; font-weight: 600; text-decoration: none;
+      cursor: pointer; transition: background-color 0.12s;
+    }
+    .btn-primary { background: var(--accent); color: #FFFFFF; border: 1.5px solid var(--accent); }
+    .btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+    .btn-secondary { background: transparent; color: var(--accent); border: 1.5px solid var(--accent); }
+    .btn-secondary:hover { background: var(--hover-bg); }
+    .btn-block { width: 100%; min-height: 48px; }
+    .btn-text {
+      display: inline-flex; align-items: center; gap: 6px;
+      min-height: 40px; padding: 0 8px; margin: 0 -8px;
+      border: 0; border-radius: 6px; background: transparent;
+      color: var(--accent); font-size: 14px; font-weight: 500;
+      cursor: pointer; align-self: flex-start;
+    }
+    .btn-text:hover { background: var(--hover-bg); }
+
+    /* bottom action bar */
+    .action-bar {
+      padding: 16px; border-top: 1px solid var(--border);
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .action-meta { display: flex; justify-content: space-between; font-size: 13px; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+
+    /* choice cards (items, return method) */
+    .choices { display: flex; flex-direction: column; gap: 16px; }
+    .choice {
+      border: 1px solid var(--border); border-radius: 8px; background: var(--surface);
+      transition: border-color 0.12s;
+    }
+    .choice:hover { border-color: var(--border-hover); }
+    .choice:has(> .choice-head input:checked) {
+      border-color: var(--accent);
+      outline: 1px solid var(--accent); outline-offset: -2px;
+    }
+    .choice:has(> .choice-head input:disabled):hover { border-color: var(--border); }
+    .choice-head { display: flex; gap: 12px; align-items: flex-start; padding: 16px; cursor: pointer; }
+    .choice:has(> .choice-head input:disabled) .choice-head { cursor: default; }
+    .choice-head input[type="checkbox"],
+    .choice-head input[type="radio"] {
+      width: 20px; height: 20px; margin: 2px 0 0; flex-shrink: 0;
+      accent-color: var(--accent); cursor: pointer;
+    }
+    .choice-head input:disabled { cursor: default; }
+    .choice-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+    .choice-title { font-size: 15px; font-weight: 600; }
+    .choice-icon { margin-top: 1px; }
+    .choice-detail { display: none; padding: 16px; border-top: 1px solid var(--border); }
+    .choice:has(> .choice-head input:checked) .choice-detail { display: flex; flex-direction: column; gap: 16px; }
+    .unavailable { display: flex; gap: 6px; align-items: flex-start; font-size: 12px; color: var(--text-secondary); }
+    .unavailable [data-lucide] { width: 14px; height: 14px; margin-top: 1px; }
+    .choice:has(> .choice-head input:disabled) .choice-title { font-weight: 500; color: var(--text-secondary); }
+
+    /* chips (single choice) */
+    .chips { border: 0; margin: 0; padding: 0; min-width: 0; }
+    .chip-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip {
+      display: inline-flex; align-items: center;
+      min-height: 40px; padding: 0 14px; border-radius: 6px;
+      border: 1px solid var(--border); background: var(--surface);
+      font-size: 14px; cursor: pointer;
+      font-variant-numeric: tabular-nums;
+      transition: border-color 0.12s;
+    }
+    .chip:hover { border-color: var(--border-hover); }
+    .chip:has(input:checked) { background: var(--accent); border-color: var(--accent); color: #FFFFFF; font-weight: 500; }
+    .chip:has(input:checked):hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+    .chip:has(input:focus-visible),
+    .choice-head:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+    /* drop-off points */
+    .points { list-style: none; margin: 0; padding: 0; }
+    .point { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+    .point:first-child { padding-top: 0; }
+    .point-body { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+    .point-name { font-size: 14px; font-weight: 500; }
+    .point-dist { font-size: 12px; color: var(--text-secondary); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+    /* pickup address */
+    .kv { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+    .kv .field-label { margin-bottom: 4px; }
+
+    /* confirmation */
+    .confirm-head { display: flex; flex-direction: column; gap: 8px; }
+    .code-card {
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: 20px 16px;
+      display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center;
+    }
+    .code { font-size: 24px; font-weight: 600; letter-spacing: 0.08em; font-variant-numeric: tabular-nums; }
+    .code-group { display: flex; flex-direction: column; gap: 4px; align-items: center; }
+    .next-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 16px; }
+    .next-steps li { display: grid; grid-template-columns: 28px 1fr; gap: 12px; }
+    .next-num {
+      width: 28px; height: 28px; border-radius: 50%;
+      display: inline-flex; align-items: center; justify-content: center;
+      background: var(--muted); color: var(--text-secondary);
+      font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums;
+    }
+    .next-body { display: flex; flex-direction: column; gap: 4px; padding-top: 3px; }
+    .next-title { font-size: 14px; font-weight: 600; }
+    .next-text { margin: 0; font-size: 13px; color: var(--text-secondary); }
+    .inline-meta { display: flex; gap: 8px; align-items: flex-start; font-size: 13px; color: var(--text-secondary); }
+    .inline-meta [data-lucide] { margin-top: 1px; }
+    .inline-meta p { margin: 0; }
+
+    /* smaller screens */
+    @media (max-width: 480px) {
+      .wireframe-canvas { padding: 16px; }
+      .frame-col { width: 100%; }
+      .frame.mobile { width: 100%; max-width: 375px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wireframe-canvas">
+
+    <!-- ===================== MAIN FLOW: DROP-OFF ===================== -->
+    <section class="flow" aria-labelledby="flow-main">
+      <h2 class="flow-title" id="flow-main">Main flow: drop it off</h2>
+      <p class="flow-meta">Order, items and reason, return method, return code</p>
+
+      <div class="frame-row">
+
+        <!-- Screen 1: Order -->
+        <div class="frame-col">
+          <div class="frame-label">Screen 1: Order</div>
+          <div class="frame mobile">
+            <header class="app-bar">
+              <button class="icon-btn" aria-label="Back to my orders"><i data-lucide="chevron-left" aria-hidden="true"></i></button>
+              <h1 class="app-title num">Order #318274</h1>
+            </header>
+
+            <div class="screen">
+              <div>
+                <h2 class="h1">Delivered on Tue 3 Nov</h2>
+                <p class="lead num">Ordered Fri 30 Oct · 3 items</p>
+              </div>
+
+              <div class="note">
+                <i data-lucide="info" aria-hidden="true"></i>
+                <p>You can return items until <strong>Thu 3 Dec</strong>.</p>
+              </div>
+
+              <div>
+                <h3 class="section-label">Items (3)</h3>
+                <ul class="lines">
+                  <li class="line">
+                    <span class="ph ph-thumb">Photo 3:4</span>
+                    <div class="line-body">
+                      <span class="line-name">Wool-blend coat</span>
+                      <span class="meta">Camel · Size M</span>
+                    </div>
+                    <span class="price">£129.95</span>
+                  </li>
+                  <li class="line">
+                    <span class="ph ph-thumb">Photo 3:4</span>
+                    <div class="line-body">
+                      <span class="line-name">Straight-leg jeans</span>
+                      <span class="meta">Dark blue · W30 L32</span>
+                    </div>
+                    <span class="price">£59.95</span>
+                  </li>
+                  <li class="line">
+                    <span class="ph ph-thumb">Photo 3:4</span>
+                    <div class="line-body">
+                      <span class="line-name">Gold hoop earrings</span>
+                      <span class="meta">One size</span>
+                    </div>
+                    <span class="price">£24.95</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div>
+                <h3 class="section-label">Payment</h3>
+                <dl class="rows">
+                  <div class="row"><dt>Items</dt><dd>£214.85</dd></div>
+                  <div class="row"><dt>Delivery</dt><dd>Free</dd></div>
+                  <div class="row is-total"><dt>Total</dt><dd>£214.85</dd></div>
+                </dl>
+                <p class="meta num" style="margin: 8px 0 0;">Paid by card ending 4242</p>
+              </div>
+
+              <div>
+                <h3 class="section-label">Delivery address</h3>
+                <address class="address">Anna Clarke<br>14 Mill Lane<br>Bristol BS3 4QT</address>
+              </div>
+            </div>
+
+            <div class="action-bar">
+              <button class="btn btn-primary btn-block"><i data-lucide="undo-2" aria-hidden="true"></i>Return items</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Screen 2: Items and reason -->
+        <div class="frame-col">
+          <div class="frame-label">Screen 2: Items and reason</div>
+          <div class="frame mobile">
+            <header class="app-bar">
+              <button class="icon-btn" aria-label="Back to order"><i data-lucide="chevron-left" aria-hidden="true"></i></button>
+              <h1 class="app-title">Return items</h1>
+            </header>
+            <ol class="stepper" aria-label="Progress">
+              <li class="step is-active" aria-current="step"><span class="step-dot">1</span>Items</li>
+              <li class="step-line" aria-hidden="true"></li>
+              <li class="step"><span class="step-dot">2</span>Return method</li>
+            </ol>
+
+            <div class="screen">
+              <div>
+                <h2 class="h1">What are you sending back?</h2>
+                <p class="lead">Pick the items and tell us why. It helps us get sizes and descriptions right.</p>
+              </div>
+
+              <div class="choices">
+                <!-- selected item, reason open -->
+                <div class="choice">
+                  <label class="choice-head">
+                    <input type="checkbox" checked>
+                    <span class="ph ph-thumb">Photo 3:4</span>
+                    <span class="choice-body">
+                      <span class="choice-title">Wool-blend coat</span>
+                      <span class="meta">Camel · Size M</span>
+                    </span>
+                    <span class="price">£129.95</span>
+                  </label>
+                  <div class="choice-detail">
+                    <fieldset class="chips">
+                      <legend class="field-label">Why are you returning it?</legend>
+                      <div class="chip-wrap">
+                        <label class="chip"><input class="sr-only" type="radio" name="s2-reason-coat">Too small</label>
+                        <label class="chip"><input class="sr-only" type="radio" name="s2-reason-coat" checked>Too big</label>
+                        <label class="chip"><input class="sr-only" type="radio" name="s2-reason-coat">Doesn't look like the photos</label>
+                        <label class="chip"><input class="sr-only" type="radio" name="s2-reason-coat">Quality not as expected</label>
+                        <label class="chip"><input class="sr-only" type="radio" name="s2-reason-coat">Damaged or faulty</label>
+                        <label class="chip"><input class="sr-only" type="radio" name="s2-reason-coat">Wrong item sent</label>
+                        <label class="chip"><input class="sr-only" type="radio" name="s2-reason-coat">Changed my mind</label>
+                      </div>
+                    </fieldset>
+                    <button class="btn-text"><i data-lucide="plus" aria-hidden="true"></i>Add a comment (optional)</button>
+                  </div>
+                </div>
+
+                <!-- not selected -->
+                <div class="choice">
+                  <label class="choice-head">
+                    <input type="checkbox">
+                    <span class="ph ph-thumb">Photo 3:4</span>
+                    <span class="choice-body">
+                      <span class="choice-title">Straight-leg jeans</span>
+                      <span class="meta">Dark blue · W30 L32</span>
+                    </span>
+                    <span class="price">£59.95</span>
+                  </label>
+                  <div class="choice-detail">
+                    <fieldset class="chips">
+                      <legend class="field-label">Why are you returning it?</legend>
+                      <div class="chip-wrap">
+                        <label class="chip"><input class="sr-only" type="radio" name="s2-reason-jeans">Too small</label>
+                        <label class="chip"><input class="sr-only" type="radio" name="s2-reason-jeans">Too big</label>
+                        <label class="chip"><input class="sr-only" type="radio" name="s2-reason-jeans">Doesn't look like the photos</label>
+                        <label class="chip"><input class="sr-only" type="radio" name="s2-reason-jeans">Quality not as expected</label>
+                        <label class="chip"><input class="sr-only" type="radio" name="s2-reason-jeans">Damaged or faulty</label>
+                        <label class="chip"><input class="sr-only" type="radio" name="s2-reason-jeans">Wrong item sent</label>
+                        <label class="chip"><input class="sr-only" type="radio" name="s2-reason-jeans">Changed my mind</label>
+                      </div>
+                    </fieldset>
+                  </div>
+                </div>
+
+                <!-- not returnable -->
+                <div class="choice">
+                  <label class="choice-head">
+                    <input type="checkbox" disabled aria-describedby="s2-earrings-note">
+                    <span class="ph ph-thumb">Photo 3:4</span>
+                    <span class="choice-body">
+                      <span class="choice-title">Gold hoop earrings</span>
+                      <span class="unavailable" id="s2-earrings-note"><i data-lucide="lock" aria-hidden="true"></i>Earrings can't be returned for hygiene reasons.</span>
+                    </span>
+                    <span class="price">£24.95</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div class="action-bar">
+              <div class="action-meta"><span>1 item selected</span><span>£129.95</span></div>
+              <button class="btn btn-primary btn-block">Next: return method</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Screen 3: Return method (drop-off) -->
+        <div class="frame-col">
+          <div class="frame-label">Screen 3: Return method (drop-off)</div>
+          <div class="frame mobile">
+            <header class="app-bar">
+              <button class="icon-btn" aria-label="Back to items"><i data-lucide="chevron-left" aria-hidden="true"></i></button>
+              <h1 class="app-title">Return items</h1>
+            </header>
+            <ol class="stepper" aria-label="Progress">
+              <li class="step is-done"><span class="step-dot"><i data-lucide="check" aria-hidden="true"></i><span class="sr-only">Done:</span></span>Items</li>
+              <li class="step-line" aria-hidden="true"></li>
+              <li class="step is-active" aria-current="step"><span class="step-dot">2</span>Return method</li>
+            </ol>
+
+            <div class="screen">
+              <h2 class="h1">How will you send it back?</h2>
+
+              <fieldset class="chips">
+                <legend class="sr-only">Return method</legend>
+                <div class="choices">
+                  <div class="choice">
+                    <label class="choice-head">
+                      <input type="radio" name="s3-method" checked>
+                      <span class="choice-icon icon-20"><i data-lucide="map-pin" aria-hidden="true"></i></span>
+                      <span class="choice-body">
+                        <span class="choice-title">Drop it off</span>
+                        <span class="meta">At a parcel shop or locker, whenever it suits you</span>
+                      </span>
+                      <span class="price">Free</span>
+                    </label>
+                    <div class="choice-detail">
+                      <p class="next-text">Show your return code at any of our drop-off points. No printer or label needed.</p>
+                      <div>
+                        <h3 class="section-label">Nearest to 14 Mill Lane</h3>
+                        <ul class="points">
+                          <li class="point">
+                            <span class="point-body">
+                              <span class="point-name">Mill Lane Newsagent</span>
+                              <span class="meta num">Parcel shop · Open today until 21:00</span>
+                            </span>
+                            <span class="point-dist">0.2 mi</span>
+                          </li>
+                          <li class="point">
+                            <span class="point-body">
+                              <span class="point-name">Bedminster Station</span>
+                              <span class="meta">Parcel locker · Open 24 hours</span>
+                            </span>
+                            <span class="point-dist">0.5 mi</span>
+                          </li>
+                          <li class="point">
+                            <span class="point-body">
+                              <span class="point-name">North Street Post Office</span>
+                              <span class="meta num">Post office · Open today until 17:30</span>
+                            </span>
+                            <span class="point-dist">0.8 mi</span>
+                          </li>
+                        </ul>
+                      </div>
+                      <button class="btn-text"><i data-lucide="map" aria-hidden="true"></i>Show all on map</button>
+                    </div>
+                  </div>
+
+                  <div class="choice">
+                    <label class="choice-head">
+                      <input type="radio" name="s3-method">
+                      <span class="choice-icon icon-20"><i data-lucide="truck" aria-hidden="true"></i></span>
+                      <span class="choice-body">
+                        <span class="choice-title">Have it picked up</span>
+                        <span class="meta">A courier collects it from your home</span>
+                      </span>
+                      <span class="price">£2.95</span>
+                    </label>
+                  </div>
+                </div>
+              </fieldset>
+
+              <div>
+                <h3 class="section-label">Your refund</h3>
+                <dl class="rows">
+                  <div class="row"><dt>Wool-blend coat</dt><dd>£129.95</dd></div>
+                  <div class="row"><dt>Return shipping</dt><dd>Free</dd></div>
+                  <div class="row is-total"><dt>Refund</dt><dd>£129.95</dd></div>
+                </dl>
+                <p class="meta num" style="margin: 8px 0 0;">To your card ending 4242, within 5 working days after we've received your return.</p>
+              </div>
+            </div>
+
+            <div class="action-bar">
+              <button class="btn btn-primary btn-block">Confirm return</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Screen 4: Confirmation (drop-off) -->
+        <div class="frame-col">
+          <div class="frame-label">Screen 4: Confirmation (drop-off)</div>
+          <div class="frame mobile">
+            <header class="app-bar">
+              <h1 class="app-title">Return</h1>
+              <button class="icon-btn" aria-label="Close"><i data-lucide="x" aria-hidden="true"></i></button>
+            </header>
+
+            <div class="screen">
+              <div class="confirm-head">
+                <span class="icon-24"><i data-lucide="check-circle" aria-hidden="true"></i></span>
+                <h2 class="h1">Your return is registered</h2>
+                <p class="lead" style="margin: 0;">Take the parcel to a drop-off point and show this code. Valid until Thu 3 Dec.</p>
+              </div>
+
+              <div class="code-card">
+                <div class="ph ph-qr">QR code 1:1</div>
+                <div class="code-group">
+                  <span class="meta">Return code</span>
+                  <span class="code">7K4P 92QX</span>
+                </div>
+                <button class="btn btn-secondary"><i data-lucide="copy" aria-hidden="true"></i>Copy code</button>
+              </div>
+
+              <div>
+                <h3 class="section-label">What's next</h3>
+                <ol class="next-steps">
+                  <li>
+                    <span class="next-num">1</span>
+                    <span class="next-body">
+                      <span class="next-title">Pack the coat</span>
+                      <p class="next-text">Any box or bag will do.</p>
+                    </span>
+                  </li>
+                  <li>
+                    <span class="next-num">2</span>
+                    <span class="next-body">
+                      <span class="next-title">Drop it off before Thu 3 Dec</span>
+                      <p class="next-text">Show the code at the counter, or scan it at a locker.</p>
+                      <button class="btn-text"><i data-lucide="map-pin" aria-hidden="true"></i>Find a drop-off point</button>
+                    </span>
+                  </li>
+                  <li>
+                    <span class="next-num">3</span>
+                    <span class="next-body">
+                      <span class="next-title">Get your refund</span>
+                      <p class="next-text num">£129.95 to your card ending 4242, within 5 working days after we've received it. We'll email you.</p>
+                    </span>
+                  </li>
+                </ol>
+              </div>
+
+              <div class="inline-meta">
+                <i data-lucide="mail" aria-hidden="true"></i>
+                <p>We've also emailed this code to anna.clarke@example.com. You can always find it in your order.</p>
+              </div>
+            </div>
+
+            <div class="action-bar">
+              <button class="btn btn-primary btn-block">Done</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===================== VARIANT: PICKUP ===================== -->
+    <section class="flow" aria-labelledby="flow-pickup">
+      <h2 class="flow-title" id="flow-pickup">Variant: have it picked up</h2>
+      <p class="flow-meta">Screens 1 and 2 stay the same</p>
+
+      <div class="frame-row">
+
+        <!-- Screen 3b: Return method (pickup) -->
+        <div class="frame-col">
+          <div class="frame-label">Screen 3b: Return method (pickup)</div>
+          <div class="frame mobile">
+            <header class="app-bar">
+              <button class="icon-btn" aria-label="Back to items"><i data-lucide="chevron-left" aria-hidden="true"></i></button>
+              <h1 class="app-title">Return items</h1>
+            </header>
+            <ol class="stepper" aria-label="Progress">
+              <li class="step is-done"><span class="step-dot"><i data-lucide="check" aria-hidden="true"></i><span class="sr-only">Done:</span></span>Items</li>
+              <li class="step-line" aria-hidden="true"></li>
+              <li class="step is-active" aria-current="step"><span class="step-dot">2</span>Return method</li>
+            </ol>
+
+            <div class="screen">
+              <h2 class="h1">How will you send it back?</h2>
+
+              <fieldset class="chips">
+                <legend class="sr-only">Return method</legend>
+                <div class="choices">
+                  <div class="choice">
+                    <label class="choice-head">
+                      <input type="radio" name="s3b-method">
+                      <span class="choice-icon icon-20"><i data-lucide="map-pin" aria-hidden="true"></i></span>
+                      <span class="choice-body">
+                        <span class="choice-title">Drop it off</span>
+                        <span class="meta">At a parcel shop or locker, whenever it suits you</span>
+                      </span>
+                      <span class="price">Free</span>
+                    </label>
+                  </div>
+
+                  <div class="choice">
+                    <label class="choice-head">
+                      <input type="radio" name="s3b-method" checked>
+                      <span class="choice-icon icon-20"><i data-lucide="truck" aria-hidden="true"></i></span>
+                      <span class="choice-body">
+                        <span class="choice-title">Have it picked up</span>
+                        <span class="meta">A courier collects it from your home</span>
+                      </span>
+                      <span class="price">£2.95</span>
+                    </label>
+                    <div class="choice-detail">
+                      <div class="kv">
+                        <div>
+                          <span class="field-label">Pickup address</span>
+                          <address class="address">14 Mill Lane<br>Bristol BS3 4QT</address>
+                        </div>
+                        <button class="btn-text" style="margin: 0 -8px 0 0;">Change</button>
+                      </div>
+                      <fieldset class="chips">
+                        <legend class="field-label">Pickup day</legend>
+                        <div class="chip-wrap">
+                          <label class="chip"><input class="sr-only" type="radio" name="s3b-day">Mon 9 Nov</label>
+                          <label class="chip"><input class="sr-only" type="radio" name="s3b-day" checked>Tue 10 Nov</label>
+                          <label class="chip"><input class="sr-only" type="radio" name="s3b-day">Wed 11 Nov</label>
+                          <label class="chip"><input class="sr-only" type="radio" name="s3b-day">Thu 12 Nov</label>
+                        </div>
+                      </fieldset>
+                      <div class="inline-meta">
+                        <i data-lucide="clock" aria-hidden="true"></i>
+                        <p class="num">Between 9:00 and 17:00. The courier brings the label, so no printer needed.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </fieldset>
+
+              <div>
+                <h3 class="section-label">Your refund</h3>
+                <dl class="rows">
+                  <div class="row"><dt>Wool-blend coat</dt><dd>£129.95</dd></div>
+                  <div class="row"><dt>Pickup</dt><dd>−£2.95</dd></div>
+                  <div class="row is-total"><dt>Refund</dt><dd>£127.00</dd></div>
+                </dl>
+                <p class="meta num" style="margin: 8px 0 0;">To your card ending 4242, within 5 working days after we've received your return.</p>
+              </div>
+            </div>
+
+            <div class="action-bar">
+              <button class="btn btn-primary btn-block">Confirm return</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Screen 4b: Confirmation (pickup) -->
+        <div class="frame-col">
+          <div class="frame-label">Screen 4b: Confirmation (pickup)</div>
+          <div class="frame mobile">
+            <header class="app-bar">
+              <h1 class="app-title">Return</h1>
+              <button class="icon-btn" aria-label="Close"><i data-lucide="x" aria-hidden="true"></i></button>
+            </header>
+
+            <div class="screen">
+              <div class="confirm-head">
+                <span class="icon-24"><i data-lucide="check-circle" aria-hidden="true"></i></span>
+                <h2 class="h1">Pickup booked</h2>
+                <p class="lead num" style="margin: 0;">A courier collects your parcel on Tue 10 Nov, between 9:00 and 17:00.</p>
+              </div>
+
+              <div class="code-card">
+                <div class="ph ph-qr">QR code 1:1</div>
+                <div class="code-group">
+                  <span class="meta">Return code</span>
+                  <span class="code">7K4P 92QX</span>
+                </div>
+                <p class="next-text" style="margin: 0;">The courier scans this code and brings the label.</p>
+                <button class="btn btn-secondary"><i data-lucide="copy" aria-hidden="true"></i>Copy code</button>
+              </div>
+
+              <div>
+                <h3 class="section-label">What's next</h3>
+                <ol class="next-steps">
+                  <li>
+                    <span class="next-num">1</span>
+                    <span class="next-body">
+                      <span class="next-title">Pack the coat</span>
+                      <p class="next-text">Any box or bag will do.</p>
+                    </span>
+                  </li>
+                  <li>
+                    <span class="next-num">2</span>
+                    <span class="next-body">
+                      <span class="next-title">Be home on Tue 10 Nov</span>
+                      <p class="next-text num">Between 9:00 and 17:00 at 14 Mill Lane, with the parcel and this code.</p>
+                      <button class="btn-text"><i data-lucide="calendar" aria-hidden="true"></i>Add to calendar</button>
+                    </span>
+                  </li>
+                  <li>
+                    <span class="next-num">3</span>
+                    <span class="next-body">
+                      <span class="next-title">Get your refund</span>
+                      <p class="next-text num">£127.00 to your card ending 4242, within 5 working days after we've received it. We'll email you.</p>
+                    </span>
+                  </li>
+                </ol>
+              </div>
+
+              <div class="inline-meta">
+                <i data-lucide="mail" aria-hidden="true"></i>
+                <p>We've also emailed this code to anna.clarke@example.com. You can always find it in your order.</p>
+              </div>
+
+              <button class="btn-text">Change or cancel pickup</button>
+            </div>
+
+            <div class="action-bar">
+              <button class="btn btn-primary btn-block">Done</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@1/dist/umd/lucide.min.js"></script>
+  <script>lucide.createIcons();</script>
+</body>
+</html>

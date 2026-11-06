@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: concept-site-gym-app
+expected_outcome: |
+  A concept site: an IA entry page plus one page per part (onboarding, classes, membership, account), each with the same menu bar (concept name, info icon, one link per part, current page marked), working relative links, Dutch copy, and per page the usual wireframe rules.

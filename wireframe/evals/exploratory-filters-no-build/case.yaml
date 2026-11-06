@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: exploratory-filters-no-build
+expected_outcome: |
+  The reply spars instead of building: it compares the two options with trade-offs for a job app, covers interaction (when filters apply, result count, reset, small screens), gives a preference with a reason, and asks whether and which option to wireframe. No wireframe yet. Compact.

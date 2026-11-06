@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: projects-dashboard-desktop
+expected_outcome: |
+  A single self-contained HTML file with two desktop frames (filled overview and empty state) side by side or stacked, English copy, grayscale plus one accent color, Lucide icons and hover states.

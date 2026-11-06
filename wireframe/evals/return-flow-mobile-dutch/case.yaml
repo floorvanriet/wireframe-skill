@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: return-flow-mobile-dutch
+expected_outcome: |
+  A single self-contained HTML file with the return flow as several mobile frames side by side (order, item + reason, return method, confirmation), Dutch copy, grayscale plus one accent color, Lucide icons and hover states.
